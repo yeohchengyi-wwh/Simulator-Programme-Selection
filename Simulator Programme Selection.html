@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Program Selection Dashboard</title>
+  
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-panel: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --accent-primary: #2563eb;
+      
+      /* Data Visualization */
+      --color-1: #41f63b; /* Pure Science */
+      --color-2: #015439; /* Applied Sciences */
+      --color-3: #3e0bf5; /* Engineering */
+      --color-4: #f0a823; /* Accounting */
+      --color-5: #7b43ff; /* Management */
+      --color-6: #ff0000; /* Arts */
+      
+      --radius-xl: 20px;
+      --radius-md: 10px;
+      
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .dashboard {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 1.8rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+      min-width: 0;
+    }
+
+    .header-area { margin-bottom: 1.5rem; }
+    .header-area h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; }
+    .header-area p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem; }
+
+    .winner-card {
+      background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+      border: 1px solid #bfdbfe;
+      padding: 1.2rem 1.5rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .winner-label { font-size: 0.8rem; color: var(--accent-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+    .winner-value { font-size: 1.5rem; font-weight: 800; color: #1e293b; }
+
+    .section-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+
+    .control-group { margin-bottom: 1.5rem; }
+    .control-row {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+    }
+    .c-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .c-name { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    
+    .c-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+    .slider-item { display: flex; align-items: center; gap: 8px; }
+    .slider-label { font-size: 0.75rem; color: var(--text-muted); width: 50px; font-weight: 500;}
+    .slider-val { font-size: 0.8rem; font-weight: 700; width: 20px; text-align: right; }
+
+    input[type=range] {
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      margin-top: -5px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+
+    .weight-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .w-label { font-size: 0.85rem; font-weight: 500; width: 70px; }
+    .w-num {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 4px 8px;
+      border-radius: 6px;
+      width: 60px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .chart-box {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+      border: 1px solid var(--border-color);
+      min-width: 0;
+    }
+    .chart-box.full-width { grid-column: 1 / -1; }
+    
+    .btn-update {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent-primary);
+      color: white;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+    .btn-update:hover { background: #1d4ed8; }
+    .btn-update:active { transform: scale(0.98); }
+
+    .heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: center; }
+    .heatmap-table th { padding: 10px; color: var(--text-muted); font-weight: 600; border-bottom: 2px solid var(--border-color); }
+    .heatmap-table td { padding: 8px; border-bottom: 1px solid var(--border-color); }
+    .hm-cell { padding: 6px; border-radius: 6px; font-weight: 700; color: #1e293b; background: #f8fafc;}
+
+    @media (max-width: 1200px) {
+      .dashboard { 
+        grid-template-columns: 1fr; 
+      }
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid { 
+        grid-template-columns: 1fr; 
+      }
+      .panel {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <aside class="panel">
+      <div class="header-area">
+        <h1>Programme Selection Simulation</h1>
+        <p>Please adjust the factor weights and programme ratings, then press confirm to simulate.</p>
+      </div>
+
+      <div class="winner-card">
+        <div>
+          <div class="winner-label">Top Recommendation</div>
+          <div class="winner-value" id="win-name">Calculating...</div>
+        </div>
+        <div class="winner-value" style="color: var(--accent-primary);" id="win-score">--</div>
+      </div>
+
+      <div class="section-title">Factor Weights</div>
+      <div id="weights-container" class="control-group"></div>
+      
+      <div style="display:flex; justify-content:space-between; margin-bottom: 2rem; font-size: 0.85rem; color: var(--text-muted);">
+        <span>Total Weight Constraint:</span>
+        <strong id="w-total" style="color: var(--text-main);">1.00</strong>
+      </div>
+
+      <div class="section-title">Programme Ratings</div>
+      <div id="ratings-container"></div>
+
+      <button class="btn-update" id="btn-recalc">Confirm and Simulate Output Report</button>
+    </aside>
+
+    <!-- Analytics -->
+    <main class="panel">
+      <div class="section-title">Analytics Engine</div>
+      <div class="charts-grid">
+        
+        <!-- Bar Charts -->
+        <div class="chart-box">
+          <div class="section-title" style="font-size: 0.75rem;">Programme Choice Probability</div>
+          <div style="height: 250px;"><canvas id="chartProb"></canvas></div>
+        </div>
+
+        <div class="chart-box">
+          <div class="section-title" style="font-size: 0.75rem;">Raw Utility Score</div>
+          <div style="height: 250px;"><canvas id="chartUtil"></canvas></div>
+        </div>
+
+        <!-- Radar Chart -->
+        <div class="chart-box full-width">
+          <div class="section-title" style="font-size: 0.75rem;">Top 3 Alternatives: Multidimensional Comparison</div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
+            This radar chart compares the strengths and weaknesses of your top 3 recommended programs across all evaluated dimensions.
+          </p>
+          <div style="height: 320px; display: flex; justify-content: center;"><canvas id="chartRadar"></canvas></div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="chart-box full-width">
+          <div class="section-title" style="font-size: 0.75rem;">Factor Correlation Matrix</div>
+          <div style="overflow-x: auto;">
+            <table class="heatmap-table" id="heatmap-body"></table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+  <script src="Function.js"></script>
+</body>
+</html>
